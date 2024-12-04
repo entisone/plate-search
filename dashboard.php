@@ -73,7 +73,7 @@ $result = $con->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Dashboard <?php echo htmlspecialchars($_SESSION['name']); ?></title>
 </head>
 <body>
     <h1>Welcome to the Dashboard, <?php echo htmlspecialchars($_SESSION['name']); ?>!</h1>

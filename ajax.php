@@ -7,7 +7,7 @@ if (isset($_POST['search'])) {
     $plate_numbers = $_POST['search'];
 
     // Updated query
-    $Query = "SELECT plate_numbers FROM plate_table WHERE plate_numbers LIKE '%$plate_numbers%'";
+    $Query = "SELECT plate_numbers FROM plate_table WHERE plate_numbers LIKE '%$plate_numbers%' LIMIT 1";
 
     $ExecQuery = MySQLi_query($con, $Query);
 
