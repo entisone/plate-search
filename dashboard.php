@@ -11,28 +11,6 @@ include('dashboard-template.php');
 </head>
 <body>
     <div class="dashboard">
-        <div class="hamburger" id="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <h2>Menu</h2>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Profile</a></li>
-                <li><a href="search.php">Plate Search</a></li>
-                <li><a href="#">Settings</a></li>
-                <li><a href="logout.php">Logout</a></li>
-                <li>
-                    <label class="switch">
-                        <input type="checkbox" id="theme-toggle">
-                        <span class="slider"></span>
-                    </label>
-                </li>
-            </ul>
-        </div>
     <!-- Main Content -->
     <div class="main-content">
             <h1>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>!</h1>
@@ -133,8 +111,6 @@ include('dashboard-template.php');
                 <?php } ?>
             </table>
         </div>
-        <!-- ---------------------- -->
-        <!-- Hamburger script -->
         <script>
             const hamburger = document.getElementById('hamburger');
             const sidebar = document.getElementById('sidebar');
@@ -148,14 +124,14 @@ include('dashboard-template.php');
             // <!-- Toggling Light and  Dark mode -->
             const themeToggle = document.getElementById('theme-toggle');
             const body = document.body;
-    
+
             // Check localStorage for theme preference
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme) {
                 body.classList.add(currentTheme);
                 themeToggle.checked = currentTheme === 'dark-mode';
             }
-    
+
             // Toggle theme on switch change
             themeToggle.addEventListener('change', () => {
                 if (themeToggle.checked) {
