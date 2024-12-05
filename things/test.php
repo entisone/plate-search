@@ -1,15 +1,26 @@
+<?php
+include('../things/session.php');
+include('../db.php');
+?>
 <div>
-    <label for="region">Region:</label>
-    <select id="region" name="region" onchange="updateProvinces()">
-        <option value="" disabled selected>Select Region</option>
-        <option value="Region I">Region I - Ilocos Region</option>
-        <option value="Region II">Region II - Cagayan Valley</option>
-        <option value="Region III">Region III - Central Luzon</option>
-        <option value="CAR">CAR - Cordillera Administrative Region</option>
-        <option value="NCR">NCR - National Capital Region</option>
-        <option value="Region IV-A">Region IV-A - CALABARZON</option>
-        <option value="Region IV-B">Region IV-B - MIMAROPA</option>
-    </select>
+    <label for="region">Office</label>
+    <select name="admin_type" id="region"  onchange="updateProvinces()">
+            <?php 
+                $query = "SELECT * FROM `admin_table`;"; 
+                $AdminResult = $con->query($query); 
+                
+                if ($AdminResult->num_rows > 0)  
+                { 
+                    while($row = $AdminResult->fetch_assoc()) 
+                    { 
+                        echo '<option value="' . $row['type'] . '">' . $row['type'] . '</option>';
+                    } 
+                }  
+                else { 
+                    echo "0 results"; 
+                } 
+            ?>
+        </select>
 
     <label for="province">Province:</label>
     <select id="province" name="province" onchange="updateCities()">
