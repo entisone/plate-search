@@ -24,7 +24,7 @@ include('dashboard-template.php');
                 <li><a href="#">Profile</a></li>
                 <li><a href="search.php">Plate Search</a></li>
                 <li><a href="#">Settings</a></li>
-                <li><a href="#">Logout</a></li>
+                <li><a href="logout.php">Logout</a></li>
                 <li>
                     <label class="switch">
                         <input type="checkbox" id="theme-toggle">
@@ -33,85 +33,13 @@ include('dashboard-template.php');
                 </li>
             </ul>
         </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <h1>Welcome to the Dashboard, <?php echo htmlspecialchars($_SESSION['name']); ?>!</h1>
-    <a href="logout.php">Logout</a>
+    <!-- Main Content -->
+    <div class="main-content">
+            <h1>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>!</h1>
+    
     <?php 
         if($_SESSION["admin_type"] == "Admin") {
     ?>
-    <h2>Manage Users</h2>
-
-    <!-- Create User Form -->
-    <form method="POST" action="">
-        <h3>Create User</h3>
-        <label>Username:</label>
-        <input type="text" name="username" required>
-        <label>Password:</label>
-        <input type="password" name="password" required>
-        <label>Name:</label>
-        <input type="text" name="name" required>
-        <label>User Type:</label>
-        <select name="admin_type" id="admin_type">
-            <?php 
-                $query = "SELECT * FROM `admin_table`;"; 
-                $AdminResult = $con->query($query); 
-                
-                if ($AdminResult->num_rows > 0)  
-                { 
-                    while($row = $AdminResult->fetch_assoc()) 
-                    { 
-                        echo '<option value="' . $row['type'] . '">' . $row['type'] . '</option>';
-                    } 
-                }  
-                else { 
-                    echo "0 results"; 
-                } 
-            ?>
-        </select>
-        <button type="submit" name="create">Add User</button>
-    </form>
-
-    <!-- List of Users -->
-     
-    <h3>Users List</h3>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Name</th>
-            <th>User Type</th>
-            <th>Actions</th>
-        </tr>
-        <?php while ($row = $result->fetch_assoc()) { ?>
-        <tr>
-            <td><?php echo $row['user_id']; ?></td>
-            <td><?php echo htmlspecialchars($row['username']); ?></td>
-            <td><?php echo htmlspecialchars($row['name']); ?></td>
-            <td><?php echo htmlspecialchars($row['admin_type']); ?></td>
-            <td>
-                <!-- Update Form -->
-                <form method="POST" action="" style="display:inline-block;">
-                    <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>">
-                    <input type="text" name="username" value="<?php echo htmlspecialchars($row['username']); ?>" required>
-                    <input type="text" name="name" value="<?php echo htmlspecialchars($row['name']); ?>" required>
-                    <select name="admin_type" id="admin_type">
-                        <option value="<?php echo $row['admin_type'] ?>"><?php echo $row['admin_type'] ?></option>
-                    </select>
-                    <button type="submit" name="update">Update</button>
-                </form>
-
-                <!-- Delete Form -->
-                <form method="POST" action="" style="display:inline-block;">
-                    <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>">
-                    <button type="submit" name="delete" onclick="return confirm('Are you sure you want to delete this user?');">Delete</button>
-                </form>
-            </td>
-        </tr>
-        <?php } ?>
-        <?php } ?>
-    </table>
             <h1>Dashboard</h1>
             <div class="bento-grid">
                 <div class="tile large" style="background-color: #0078D7;">
@@ -136,6 +64,74 @@ include('dashboard-template.php');
                 <div class="tile large" style="background-color: #00B294;">Tile 5</div>
                 <div class="tile small" style="background-color: #8E8CD8;">Tile 6</div>
             </div>
+            <h2>Manage Users</h2>
+            <!-- Create User Form -->
+            <form method="POST" action="">
+                <h3>Create User</h3>
+                <label>Username:</label>
+                <input type="text" name="username" required>
+                <label>Password:</label>
+                <input type="password" name="password" required>
+                <label>Name:</label>
+                <input type="text" name="name" required>
+                <label>User Type:</label>
+                <select name="admin_type" id="admin_type">
+                    <?php 
+                        $query = "SELECT * FROM `admin_table`;"; 
+                        $AdminResult = $con->query($query); 
+                        
+                        if ($AdminResult->num_rows > 0)  
+                        { 
+                            while($row = $AdminResult->fetch_assoc()) 
+                            { 
+                                echo '<option value="' . $row['type'] . '">' . $row['type'] . '</option>';
+                            } 
+                        }  
+                        else { 
+                            echo "0 results"; 
+                        } 
+                    ?>
+                </select>
+                <button type="submit" name="create">Add User</button>
+            </form>
+            <!-- List of Users -->
+            <h3>Users List</h3>
+            <table border="1" id="userTable">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Admin Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+                <?php while ($row = $result->fetch_assoc()) { ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($row['username']); ?></td>
+                    <td><?php echo htmlspecialchars($row['name']); ?></td>
+                    <td><?php echo htmlspecialchars($row['admin_type']); ?></td>
+                    <td>
+                        <!-- Update Form -->
+                        <form method="POST" action="" style="display:inline-block;">
+                            <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>">
+                            <input type="text" name="username" value="<?php echo htmlspecialchars($row['username']); ?>" required>
+                            <input type="text" name="name" value="<?php echo htmlspecialchars($row['name']); ?>" required>
+                            <select name="admin_type" id="admin_type">
+                                <option value="<?php echo $row['admin_type'] ?>"><?php echo $row['admin_type'] ?></option>
+                            </select>
+                            <button type="submit" name="update">Update</button>
+                        </form>
+
+                        <!-- Delete Form -->
+                        <form method="POST" action="" style="display:inline-block;">
+                            <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>">
+                            <button type="submit" name="delete" onclick="return confirm('Are you sure you want to delete this user?');">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                <?php } ?>
+                <?php } ?>
+            </table>
         </div>
         <!-- ---------------------- -->
         <!-- Hamburger script -->
@@ -149,9 +145,7 @@ include('dashboard-template.php');
                 sidebar.classList.toggle('open');
                 mainContent.classList.toggle('shifted');
             });
-        </script>
-        <!-- Toggling Light and  Dark mode -->
-        <script>
+            // <!-- Toggling Light and  Dark mode -->
             const themeToggle = document.getElementById('theme-toggle');
             const body = document.body;
     
@@ -174,6 +168,25 @@ include('dashboard-template.php');
                     localStorage.setItem('theme', 'light-mode');
                 }
             });
+            $(document).ready(function() {
+                    $('#userTable').DataTable({
+                        // Optional settings
+                        paging: true,       // Enable pagination
+                        searching: true,    // Enable search functionality
+                        ordering: true,     // Enable column sorting
+                        info: false,          // Show table information
+                        pageLength: 10,
+                        columnDefs: [
+                            { orderable: false, targets: 3 } // Disable sorting on the 4th column (0-indexed)
+                        ], // Show 10 rows per page
+                        columns: [
+                            { data: 'username' },
+                            { data: 'name' },
+                            { data: 'admin_type' },
+                            { data: 'actions' }
+                        ]
+                    });
+                });
         </script>
     </div>
 </body>

@@ -54,6 +54,6 @@ include('template.php');
                     localStorage.setItem('theme', 'light-mode');
                 }
             });
-        </script>
+    </script>
 </body>
 </html>
