@@ -31,5 +31,29 @@ include('template.php');
             <button type="submit">Login</button>
         </form>
     </div>
+    <script>
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+    
+            // Check localStorage for theme preference
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme) {
+                body.classList.add(currentTheme);
+                themeToggle.checked = currentTheme === 'dark-mode';
+            }
+    
+            // Toggle theme on switch change
+            themeToggle.addEventListener('change', () => {
+                if (themeToggle.checked) {
+                    body.classList.remove('light-mode');
+                    body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    body.classList.remove('dark-mode');
+                    body.classList.add('light-mode');
+                    localStorage.setItem('theme', 'light-mode');
+                }
+            });
+        </script>
 </body>
 </html>

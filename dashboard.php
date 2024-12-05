@@ -1,84 +1,46 @@
-<?php
-session_start();
-include('db.php');
-
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-// Handle Create Operation
-if (isset($_POST['create'])) {
-    $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
-    $name = $_POST['name'];
-    $admin_type = $_POST['admin_type'];
-
-    $sql = "INSERT INTO user_tbl (username, password, name, admin_type) VALUES (?, ?, ?, ?)";
-    $stmt = $con->prepare($sql);
-    $stmt->bind_param("ssss", $username, $password, $name, $admin_type); 
-
-    if ($stmt->execute()) {
-        echo "User created successfully!";
-    } else {
-        echo "Error: " . $con->error;
-    }
-    $stmt->close();
-}
-
-// Handle Update Operation
-if (isset($_POST['update'])) {
-    $user_id = $_POST['user_id'];
-    $username = $_POST['username'];
-    $name = $_POST['name'];
-    $admin_type = $_POST['admin_type'];
-
-    $sql = "UPDATE user_tbl SET username = ?, name = ?, admin_type = ? WHERE user_id = ?";
-    $stmt = $con->prepare($sql);
-    $stmt->bind_param("sssi", $username, $name, $admin_type, $user_id); // Correct order and types
-
-    if ($stmt->execute()) {
-        echo "User updated successfully!";
-    } else {
-        echo "Error: " . $stmt->error;
-    }
-    $stmt->close();
-}
-
-
-// Handle Delete Operation
-if (isset($_POST['delete'])) {
-    $user_id = $_POST['user_id'];
-
-    $sql = "DELETE FROM user_tbl WHERE user_id = ?";
-    $stmt = $con->prepare($sql);
-    $stmt->bind_param("i", $user_id);
-
-    if ($stmt->execute()) {
-        echo "User deleted successfully!";
-    } else {
-        echo "Error: " . $con->error;
-    }
-    $stmt->close();
-}
-
-// Fetch All Users
-$sql = "SELECT * FROM user_tbl";
-$result = $con->query($sql);
+<?php 
+include('dashboard-template.php');
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard <?php echo htmlspecialchars($_SESSION['name']); ?></title>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Welcome to the Dashboard, <?php echo htmlspecialchars($_SESSION['name']); ?>!</h1>
-    <a href="logout.php">Logout</a>
+    <div class="dashboard">
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <h2>Menu</h2>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="search.php">Plate Search</a></li>
+                <li><a href="#">Settings</a></li>
+                <li><a href="#">Logout</a></li>
+                <li>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </li>
+            </ul>
+        </div>
 
+        <!-- Main Content -->
+        <div class="main-content">
+            <h1>Welcome to the Dashboard, <?php echo htmlspecialchars($_SESSION['name']); ?>!</h1>
+    <a href="logout.php">Logout</a>
+    <?php 
+        if($_SESSION["admin_type"] == "Admin") {
+    ?>
     <h2>Manage Users</h2>
 
     <!-- Create User Form -->
@@ -112,6 +74,7 @@ $result = $con->query($sql);
     </form>
 
     <!-- List of Users -->
+     
     <h3>Users List</h3>
     <table border="1">
         <tr>
@@ -147,8 +110,74 @@ $result = $con->query($sql);
             </td>
         </tr>
         <?php } ?>
+        <?php } ?>
     </table>
-
-    <?php $con->close(); ?>
+            <h1>Dashboard</h1>
+            <div class="bento-grid">
+                <div class="tile large" style="background-color: #0078D7;">
+                <p>Total Plate Numbers: </p>
+                    <br/>
+                    <?php 
+                        $PlateQuery = "SELECT COUNT(plate_numbers) AS total_count FROM plate_table;";
+                        $PlateResult = $con->query($PlateQuery);
+                        
+                        if ($PlateResult->num_rows > 0) {
+                            // Fetch and display the total count
+                            $row = $PlateResult->fetch_assoc();
+                            echo "<br/> " . $row['total_count'];
+                        } else {
+                            echo "No results found.";
+                        }
+                    ?>
+            </div>
+                <div class="tile medium" style="background-color: #E81123;">Tile 2</div>
+                <div class="tile small" style="background-color: #F7630C;">Tile 3</div>
+                <div class="tile medium" style="background-color: #FFF100;">Tile 4</div>
+                <div class="tile large" style="background-color: #00B294;">Tile 5</div>
+                <div class="tile small" style="background-color: #8E8CD8;">Tile 6</div>
+            </div>
+        </div>
+        <!-- ---------------------- -->
+        <!-- Hamburger script -->
+        <script>
+            const hamburger = document.getElementById('hamburger');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.querySelector('.main-content');
+            
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                sidebar.classList.toggle('open');
+                mainContent.classList.toggle('shifted');
+            });
+        </script>
+        <!-- Toggling Light and  Dark mode -->
+        <script>
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+    
+            // Check localStorage for theme preference
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme) {
+                body.classList.add(currentTheme);
+                themeToggle.checked = currentTheme === 'dark-mode';
+            }
+    
+            // Toggle theme on switch change
+            themeToggle.addEventListener('change', () => {
+                if (themeToggle.checked) {
+                    body.classList.remove('light-mode');
+                    body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    body.classList.remove('dark-mode');
+                    body.classList.add('light-mode');
+                    localStorage.setItem('theme', 'light-mode');
+                }
+            });
+        </script>
+    </div>
 </body>
+<?php $con->close(); ?>
 </html>
+
+
